@@ -12,38 +12,49 @@
 
 #include "./get_next_line.h"
 
-void	gnl_split(char **line, char **buf)
+void	safe_free(void *ptr)
+{
+	if(ptr != NULL)
+	{
+		free(ptr);
+		ptr = NULL;
+	}
+}
+
+int		read_error(char **line)
+{
+	safe_free(*line);
+	safe_free(line);
+	return (-1);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	while (*(s + i) != c)
+	{
+		if (*(s + i) == '\0')
+			return (NULL);
+		i++;
+	}
+	return ((char *)(s + i));
+}
+
+void	gnl_split(char **line, char **rest_of_line)
  {
  	char	*tmp;
  	char	*nlptr;
 
-	nlptr = gnl_strrchr(*line, '\n');
+	nlptr = ft_strchr(*line, '\n');
  	if (!nlptr)
  		return ;
- 	tmp = ft_substr(*line, 0, nlptr - *line);
- 	*buf = gnl_strdup(nlptr + 1);
-	free(*line);
-	*line = NULL;
+ 	tmp = ft_substr(*line, 0,  ft_strlen(*line) - ft_strlen(nlptr));
+ 	*rest_of_line = gnl_strdup(nlptr + 1);
+	safe_free(*line);
  	*line = tmp;
  }
-
-char	*gnl_strrchr(const char *s, int c)
-{
-	int	i;
-
-	i = ft_strlen(s) - 1;
-	while (i > 0 && *(s + i) != c)
-		i--;
-	if (*(s + i) == c)
-		return ((char *)(s + i));
-	return (NULL);
-}
-
-void	freee(void *ptr)
-{
-	free(ptr);
-	ptr = NULL;
-}
 
 int	get_next_line(int fd, char **line)
 {
@@ -53,42 +64,51 @@ int	get_next_line(int fd, char **line)
 	char		*tmp;
 	int			r;
 
+	// delete line data
+	if (*line)
+		safe_free(*line);
+
 	// rest_of_lineが値を持っているとき，
 	if (rest_of_line)
 	{
 		*line = gnl_strdup(rest_of_line);
-		free(rest_of_line);
-		rest_of_line = NULL;
+		safe_free(rest_of_line);
 	}
 
-	// \nの後ろを含めた1行の情報を取得する
+	// read BUFFER_SIZE data from file to buf.
 	r = read(fd, buf, BUFFER_SIZE);
-	if (r <= 0)
+	if (r == 0 && **line != '\n')
 		return (r);
-	while (r)
+	if (r < 0)
+		return (read_error(line));
+
+	buf[r] = '\0';
+
+	// \nの後ろを含めた1行の情報を取得する
+	while (1)
 	{
-		buf[r] = '\0';
 		if (!*line)
 			tmp = gnl_strdup(buf);
 		else
 		{
 			tmp = ft_strjoin(*line, buf);
-			free(*line);
-			*line = NULL;
+			safe_free(*line);
 		}
 
 		*line = tmp;
-		if (gnl_strrchr(buf, '\n'))
+		if (ft_strchr(buf, '\n') || ft_strchr(*line, '\n'))
 			break;
 		r = read(fd, buf, BUFFER_SIZE);
-		if (r <= 0)
+		if (r == 0)
 			break;
+		if (r < 0)
+			return (read_error(line));
 	}
 
 	// \nの後ろを文字を静的変数に格納する
 	gnl_split(line, &rest_of_line);
 
-	if (r > 0)
+	if (r > 0 || ft_strchr(rest_of_line, '\n'))
 		r = 1;
 	return (r);
 }
