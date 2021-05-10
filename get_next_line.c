@@ -51,6 +51,7 @@ int	get_next_line(int fd, char **line)
 
 	char		buf[BUFFER_SIZE + 1];
 	char		*tmp;
+	int			r;
 
 	// rest_of_lineが値を持っているとき，
 	if (rest_of_line)
@@ -67,15 +68,15 @@ int	get_next_line(int fd, char **line)
 	while (r)
 	{
 		buf[r] = '\0';
-		if (*line)
-			tmp = ft_strjoin(*line, buf);
-		else
+		if (!*line)
 			tmp = gnl_strdup(buf);
-		if (*line)
+		else
 		{
+			tmp = ft_strjoin(*line, buf);
 			free(*line);
 			*line = NULL;
 		}
+
 		*line = tmp;
 		if (gnl_strrchr(buf, '\n'))
 			break;
