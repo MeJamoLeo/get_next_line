@@ -33,6 +33,8 @@ char	*ft_strchr(const char *s, int c)
 	int	i;
 
 	i = 0;
+	if (!s || *s == '\0')
+		return (NULL);
 	while (*(s + i) != c)
 	{
 		if (*(s + i) == '\0')
@@ -69,21 +71,21 @@ int	get_next_line(int fd, char **line)
 		safe_free(*line);
 
 	// rest_of_lineが値を持っているとき，
+	//if (*rest_of_line != '\0') // Invalid read of size 1
 	if (rest_of_line)
 	{
 		*line = gnl_strdup(rest_of_line);
-		safe_free(rest_of_line);
+		free(rest_of_line);
+		rest_of_line = NULL;
 	}
 
-	// read BUFFER_SIZE data from file to buf.
 	r = read(fd, buf, BUFFER_SIZE);
-	if (r == 0 && **line != '\n')
+	if (r == 0 && !*line && **line != '\n')
 		return (r);
 	if (r < 0)
 		return (read_error(line));
 
 	buf[r] = '\0';
-
 	// \nの後ろを含めた1行の情報を取得する
 	while (1)
 	{
