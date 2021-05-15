@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/09 18:46:15 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/15 10:45:00 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ void	safe_free(void *ptr)
 int		read_error(char **line)
 {
 	safe_free(*line);
-	safe_free(line);
 	return (-1);
 }
 
@@ -58,6 +57,8 @@ void	gnl_split(char **line, char **rest_of_line)
  	*line = tmp;
  }
 
+//#include <time.h>
+//#include <stdio.h>
 int	get_next_line(int fd, char **line)
 {
 	static char	*rest_of_line;
@@ -66,9 +67,8 @@ int	get_next_line(int fd, char **line)
 	char		*tmp;
 	int			r;
 
-	// delete line data
-	if (*line)
-		safe_free(*line);
+
+	*line = NULL;
 
 	// rest_of_lineが値を持っているとき，
 	//if (*rest_of_line != '\0') // Invalid read of size 1
@@ -80,10 +80,13 @@ int	get_next_line(int fd, char **line)
 	}
 
 	r = read(fd, buf, BUFFER_SIZE);
-	if (r == 0 && !*line && **line != '\n')
-		return (r);
 	if (r < 0)
 		return (read_error(line));
+	if (r == 0 && !*line)
+	{
+		*line = gnl_strdup("");
+		return (r);
+	}
 
 	buf[r] = '\0';
 	// \nの後ろを含めた1行の情報を取得する
@@ -98,7 +101,7 @@ int	get_next_line(int fd, char **line)
 		}
 
 		*line = tmp;
-		if (ft_strchr(buf, '\n') || ft_strchr(*line, '\n'))
+		if (ft_strchr(buf, '\n'))
 			break;
 		r = read(fd, buf, BUFFER_SIZE);
 		if (r == 0)
@@ -112,5 +115,6 @@ int	get_next_line(int fd, char **line)
 
 	if (r > 0 || ft_strchr(rest_of_line, '\n'))
 		r = 1;
+	//printf("%d\n", (int)clock());
 	return (r);
 }
