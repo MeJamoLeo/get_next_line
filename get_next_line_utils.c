@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/08 03:23:27 by treo              #+#    #+#             */
-/*   Updated: 2021/05/15 10:18:31 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/16 06:39:52 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*gnl_strdup(const char *s1)
 	int		i;
 
 	len = ft_strlen(s1);
-	ptr = (char *)malloc(sizeof(char) * (len + 1));
+	ptr = malloc(sizeof(char) * (len + 1));
 	if (!ptr)
 		return (NULL);
 	i = 0;

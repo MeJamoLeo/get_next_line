@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/16 05:57:35 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/16 06:36:45 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,18 +38,18 @@ char	*ft_strchr(const char *s, int c)
 }
 
 void	gnl_split(char **line, char **rest_of_line)
-{
-	char		*tmp;
-	char		*nlptr;
+ {
+ 	char	*tmp;
+ 	char	*nlptr;
 
 	nlptr = ft_strchr(*line, '\n');
-	if (!ft_strchr(buf, '\n')nlptr)
-		return ;
-	tmp = ft_substr(*line, 0, ft_strlen(*line) - ft_strlen(nlptr));
-	*rest_of_line = gnl_strdup(nlptr + 1);
+ 	if (!nlptr)
+ 		return ;
+ 	tmp = ft_substr(*line, 0,  ft_strlen(*line) - ft_strlen(nlptr));
+ 	*rest_of_line = gnl_strdup(nlptr + 1);
 	safe_free(*line);
-	*line = tmp;
-}
+ 	*line = tmp;
+ }
 
 int	get_next_line(int fd, char **line)
 {
