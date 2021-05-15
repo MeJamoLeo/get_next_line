@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/15 10:45:00 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/16 05:57:35 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,11 @@
 
 void	safe_free(void *ptr)
 {
-	if(ptr != NULL)
+	if (ptr != NULL)
 	{
 		free(ptr);
 		ptr = NULL;
 	}
-}
-
-int		read_error(char **line)
-{
-	safe_free(*line);
-	return (-1);
 }
 
 char	*ft_strchr(const char *s, int c)
@@ -44,54 +38,43 @@ char	*ft_strchr(const char *s, int c)
 }
 
 void	gnl_split(char **line, char **rest_of_line)
- {
- 	char	*tmp;
- 	char	*nlptr;
+{
+	char		*tmp;
+	char		*nlptr;
 
 	nlptr = ft_strchr(*line, '\n');
- 	if (!nlptr)
- 		return ;
- 	tmp = ft_substr(*line, 0,  ft_strlen(*line) - ft_strlen(nlptr));
- 	*rest_of_line = gnl_strdup(nlptr + 1);
+	if (!ft_strchr(buf, '\n')nlptr)
+		return ;
+	tmp = ft_substr(*line, 0, ft_strlen(*line) - ft_strlen(nlptr));
+	*rest_of_line = gnl_strdup(nlptr + 1);
 	safe_free(*line);
- 	*line = tmp;
- }
+	*line = tmp;
+}
 
-//#include <time.h>
-//#include <stdio.h>
 int	get_next_line(int fd, char **line)
 {
 	static char	*rest_of_line;
-
 	char		buf[BUFFER_SIZE + 1];
 	char		*tmp;
 	int			r;
 
-
 	*line = NULL;
-
-	// rest_of_lineが値を持っているとき，
-	//if (*rest_of_line != '\0') // Invalid read of size 1
+	r = 1;
 	if (rest_of_line)
 	{
 		*line = gnl_strdup(rest_of_line);
 		free(rest_of_line);
 		rest_of_line = NULL;
 	}
-
-	r = read(fd, buf, BUFFER_SIZE);
-	if (r < 0)
-		return (read_error(line));
-	if (r == 0 && !*line)
+	while (r != 0 && !(ft_strchr(buf, '\n')))
 	{
-		*line = gnl_strdup("");
-		return (r);
-	}
-
-	buf[r] = '\0';
-	// \nの後ろを含めた1行の情報を取得する
-	while (1)
-	{
+		r = read(fd, buf, BUFFER_SIZE);
+		if (r < 0)
+		{
+			safe_free(*line);
+			return (-1);
+		}
+		buf[r] = '\0';
 		if (!*line)
 			tmp = gnl_strdup(buf);
 		else
@@ -99,22 +82,10 @@ int	get_next_line(int fd, char **line)
 			tmp = ft_strjoin(*line, buf);
 			safe_free(*line);
 		}
-
 		*line = tmp;
-		if (ft_strchr(buf, '\n'))
-			break;
-		r = read(fd, buf, BUFFER_SIZE);
-		if (r == 0)
-			break;
-		if (r < 0)
-			return (read_error(line));
 	}
-
-	// \nの後ろを文字を静的変数に格納する
 	gnl_split(line, &rest_of_line);
-
 	if (r > 0 || ft_strchr(rest_of_line, '\n'))
 		r = 1;
-	//printf("%d\n", (int)clock());
 	return (r);
 }
