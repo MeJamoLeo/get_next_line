@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/17 20:11:30 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/18 07:13:04 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,18 +38,20 @@ char	*ft_strchr(const char *s, int c)
 }
 
 void	gnl_split(char **line, char **rest_of_line)
- {
- 	char	*tmp;
- 	char	*nlptr;
+{
+	char	*tmp;
+	char	*nlptr;
 
 	nlptr = ft_strchr(*line, '\n');
- 	if (!nlptr)
- 		return ;
- 	tmp = ft_substr(*line, 0,  ft_strlen(*line) - ft_strlen(nlptr));
- 	*rest_of_line = gnl_strdup(nlptr + 1);
+	if (!nlptr)
+		return ;
+	if (!*line)
+		return ;
+	tmp = ft_substr(*line, 0,  ft_strlen(*line) - ft_strlen(nlptr));
+	*rest_of_line = gnl_strdup(nlptr + 1);
 	safe_free(*line);
- 	*line = tmp;
- }
+	*line = tmp;
+}
 
 int	get_next_line(int fd, char **line)
 {
@@ -60,13 +62,18 @@ int	get_next_line(int fd, char **line)
 
 	*line = NULL;
 	r = 1;
+	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (fd < 0 || 256 < fd || !buf)
+	{
+		safe_free(buf);
+		return (-1);
+	}
 	if (rest_of_line)
 	{
 		*line = gnl_strdup(rest_of_line);
 		free(rest_of_line);
 		rest_of_line = NULL;
 	}
-	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	while (r != 0 && !(ft_strchr(buf, '\n')))
 	{
 		r = read(fd, buf, BUFFER_SIZE);
@@ -87,6 +94,7 @@ int	get_next_line(int fd, char **line)
 	}
 	safe_free(buf);
 	gnl_split(line, &rest_of_line);
+	//if (r == 0 && !ft_strlen(*line))
 	if (r == 0 && !rest_of_line)
 		return (0);
 	return (1);
