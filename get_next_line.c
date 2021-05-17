@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/16 06:36:45 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/17 17:38:05 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,10 @@ int	get_next_line(int fd, char **line)
 		*line = tmp;
 	}
 	gnl_split(line, &rest_of_line);
-	if (r > 0 || ft_strchr(rest_of_line, '\n'))
-		r = 1;
-	return (r);
+	if (r == 0 && *rest_of_line == '\0')
+		return (0);
+	return (1);
+	//if (r > 0 || ft_strchr(rest_of_line, '\n'))
+	//	r = 1;
+	//return (r);
 }
