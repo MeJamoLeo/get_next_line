@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/17 17:38:05 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/17 20:11:30 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	gnl_split(char **line, char **rest_of_line)
 int	get_next_line(int fd, char **line)
 {
 	static char	*rest_of_line;
-	char		buf[BUFFER_SIZE + 1];
+	char		*buf;
 	char		*tmp;
 	int			r;
 
@@ -66,6 +66,7 @@ int	get_next_line(int fd, char **line)
 		free(rest_of_line);
 		rest_of_line = NULL;
 	}
+	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	while (r != 0 && !(ft_strchr(buf, '\n')))
 	{
 		r = read(fd, buf, BUFFER_SIZE);
@@ -84,11 +85,9 @@ int	get_next_line(int fd, char **line)
 		}
 		*line = tmp;
 	}
+	safe_free(buf);
 	gnl_split(line, &rest_of_line);
-	if (r == 0 && *rest_of_line == '\0')
+	if (r == 0 && !rest_of_line)
 		return (0);
 	return (1);
-	//if (r > 0 || ft_strchr(rest_of_line, '\n'))
-	//	r = 1;
-	//return (r);
 }
