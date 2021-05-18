@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/18 07:13:04 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/18 13:14:38 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,9 @@ int	get_next_line(int fd, char **line)
 		free(rest_of_line);
 		rest_of_line = NULL;
 	}
-	while (r != 0 && !(ft_strchr(buf, '\n')))
+	else
+		*line = gnl_strdup("");
+	while (r != 0)
 	{
 		r = read(fd, buf, BUFFER_SIZE);
 		if (r < 0)
@@ -83,18 +85,14 @@ int	get_next_line(int fd, char **line)
 			return (-1);
 		}
 		buf[r] = '\0';
-		if (!*line)
-			tmp = gnl_strdup(buf);
-		else
-		{
-			tmp = ft_strjoin(*line, buf);
-			safe_free(*line);
-		}
+		tmp = ft_strjoin(*line, buf);
+		safe_free(*line);
 		*line = tmp;
+		if (ft_strchr(buf, '\n'))
+			break;
 	}
 	safe_free(buf);
 	gnl_split(line, &rest_of_line);
-	//if (r == 0 && !ft_strlen(*line))
 	if (r == 0 && !rest_of_line)
 		return (0);
 	return (1);
