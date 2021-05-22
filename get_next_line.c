@@ -6,7 +6,7 @@
 /*   By: treo <treo@student.42tokyo.jp>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/07 02:34:01 by treo              #+#    #+#             */
-/*   Updated: 2021/05/18 14:10:39 by treo             ###   ########.fr       */
+/*   Updated: 2021/05/22 09:09:11 by treo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int	get_next_line(int fd, char **line)
 
 	*line = NULL;
 	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (fd < 0 || 256 < fd || !buf)
+	if (fd < 0 || 256 < fd || BUFFER_SIZE < 1|| !buf)
 	{
 		safe_free(buf);
 		return (-1);
